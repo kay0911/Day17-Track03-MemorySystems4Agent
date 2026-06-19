@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Systems for AI Agent - Evaluation Dashboard</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- ChartJS for premium interactive data charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-main: #060913;
+            --bg-card: rgba(13, 20, 38, 0.45);
+            --border-card: rgba(255, 255, 255, 0.08);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+            --secondary: #ec4899;
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.15);
+            --warning: #f59e0b;
+            --alert: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.06) 0%, transparent 45%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* Glowing mesh backdrop overlays */
+        .glow-sphere {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: var(--primary);
+            filter: blur(150px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header block */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 24px;
+        }
+
+        .header-title h1 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        /* Mode Selector Toggle Switch */
+        .mode-selector {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+            backdrop-filter: blur(10px);
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mode-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        /* Grid dashboard layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* Glassmorphism Card Style */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 20px;
+            padding: 28px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .card-large {
+            grid-column: span 2;
+        }
+
+        .card-full {
+            grid-column: span 4;
+        }
+
+        /* Stat components */
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 12px 0 6px 0;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .stat-value.success {
+            color: var(--success);
+            text-shadow: 0 0 20px var(--success-glow);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .stat-description {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Charts Layout wrapper */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 20px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            min-height: 380px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: var(--text-muted);
+        }
+
+        /* Comparison Table component */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 16px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        td {
+            padding: 18px 16px;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-weight: 500;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .agent-name-cell {
+            font-weight: 700;
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .agent-badge {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .agent-badge.baseline { background-color: var(--secondary); }
+        .agent-badge.advanced { background-color: var(--primary); }
+
+        .token-cell {
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+
+        .highlight-text {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .saving-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        /* Architecture Visualized Block */
+        .arch-flow {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .arch-node {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 20px;
+            width: 260px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .arch-node:hover {
+            background: rgba(99, 102, 241, 0.03);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        .arch-node-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .arch-arrow {
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .card-large, .card-full {
+                grid-column: span 2;
+            }
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .card-large, .card-full {
+                grid-column: span 1;
+            }
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-sphere" style="top: -100px; left: -100px;"></div>
+    <div class="glow-sphere" style="bottom: -100px; right: -100px; background: var(--secondary)"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="header-title">
+                <h1>AI Agent Memory Benchmark Report</h1>
+                <p>Day 17 - Track 3: Evaluation of Short-Term, Long-Term, and Compact Memory Systems</p>
+            </div>
+            <div class="mode-selector">
+                <button class="mode-btn active" onclick="setMode('online')">Online (Gemini 3 Flash)</button>
+                <button class="mode-btn" onclick="setMode('offline')">Offline Simulation</button>
+            </div>
+        </header>
+
+        <!-- Metric Stat Cards -->
+        <div class="dashboard-grid">
+            <!-- Metric 1 -->
+            <div class="card">
+                <div class="stat-label">Cross-Session Recall</div>
+                <div class="stat-value success" id="val-recall">96.4%</div>
+                <div class="stat-description">Advanced Agent fact recall score across multiple conversation sessions. Baseline Agent scored only <span id="val-recall-base">12.7%</span>.</div>
+            </div>
+            <!-- Metric 2 -->
+            <div class="card">
+                <div class="stat-label">Context Savings (Stress)</div>
+                <div class="stat-value" style="color: var(--primary)" id="val-savings">58.3%</div>
+                <div class="stat-description">Total prompt token load reduction during long stressing conversations thanks to compaction middleware.</div>
+            </div>
+            <!-- Metric 3 -->
+            <div class="card">
+                <div class="stat-label">Compaction Triggers</div>
+                <div class="stat-value" style="color: var(--secondary)" id="val-compactions">28</div>
+                <div class="stat-description">Number of times message histories were compressed into abstract context summaries.</div>
+            </div>
+            <!-- Metric 4 -->
+            <div class="card">
+                <div class="stat-label">User Profile Scale</div>
+                <div class="stat-value" style="color: var(--warning)" id="val-profile">229 B</div>
+                <div class="stat-description">Final payload size of User.md containing structured, verified user metadata updates.</div>
+            </div>
+        </div>
+
+        <!-- Charts Block -->
+        <div class="charts-container">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Cross-Session Fact Recall</div>
+                    <div class="chart-badge">Standard Benchmark</div>
+                </div>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="recallChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Prompt Tokens Processed</div>
+                    <div class="chart-badge">Long-Context Stress Benchmark</div>
+                </div>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="tokenChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Results Table -->
+        <div class="card card-full" style="margin-bottom: 32px;">
+            <div class="chart-header">
+                <div class="chart-title">Detailed Evaluation Data</div>
+                <div class="chart-badge" id="table-mode-badge">Gemini-3-Flash Gateway</div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scenario & Agent</th>
+                            <th>Agent Tokens Only</th>
+                            <th>Prompt Tokens Processed</th>
+                            <th>Cross-session recall</th>
+                            <th>Response quality</th>
+                            <th>Compactions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Architectural Layout -->
+        <div class="card card-full">
+            <div class="chart-header">
+                <div class="chart-title">Implemented Memory System Architecture</div>
+                <div class="chart-badge">Advanced Agent Layout</div>
+            </div>
+            <div class="arch-flow">
+                <div class="arch-node">
+                    <div class="arch-node-title">1. Short-Term Memory</div>
+                    <div class="stat-description">LangChain / Thread-bound sliding window keeping recent dialog interactions intact (keep_messages = 4).</div>
+                </div>
+                <div class="arch-arrow">&rarr;</div>
+                <div class="arch-node">
+                    <div class="arch-node-title">2. Compact Memory</div>
+                    <div class="stat-description">Heuristic/LLM summarization triggered when threshold (>400 tokens) is exceeded, compressing old turns.</div>
+                </div>
+                <div class="arch-arrow">&rarr;</div>
+                <div class="arch-node">
+                    <div class="arch-node-title">3. Persistent User.md</div>
+                    <div class="stat-description">Stable fact extraction layer extracting personal name, preferences, and location updates into a structured profile.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data & Chart Control JS Logic -->
+    <script>
+        // Data Definitions
+        const benchmarkData = {
+            online: {
+                metrics: {
+                    recall: "96.4%",
+                    recallBase: "12.7%",
+                    savings: "58.3%",
+                    compactions: "28",
+                    profile: "229 B"
+                },
+                standard: [
+                    { name: "Baseline Agent", badge: "baseline", out: 5695, prompt: 28042, recall: "12.7%", quality: "16.3%", comp: 0 },
+                    { name: "Advanced Agent", badge: "advanced", out: 23731, prompt: 56679, recall: "96.4%", quality: "97.1%", comp: 133 }
+                ],
+                stress: [
+                    { name: "Baseline Agent", badge: "baseline", out: 3954, prompt: 47632, recall: "0.0%", quality: "0.0%", comp: 0 },
+                    { name: "Advanced Agent", badge: "advanced", out: 6841, prompt: 19881, recall: "83.3%", quality: "86.7%", comp: 28 }
+                ]
+            },
+            offline: {
+                metrics: {
+                    recall: "96.4%",
+                    recallBase: "2.4%",
+                    savings: "61.2%",
+                    compactions: "26",
+                    profile: "229 B"
+                },
+                standard: [
+                    { name: "Baseline Agent", badge: "baseline", out: 1277, prompt: 12321, recall: "2.4%", quality: "2.4%", comp: 0 },
+                    { name: "Advanced Agent", badge: "advanced", out: 1440, prompt: 20541, recall: "96.4%", quality: "97.1%", comp: 0 }
+                ],
+                stress: [
+                    { name: "Baseline Agent", badge: "baseline", out: 411, prompt: 20846, recall: "0.0%", quality: "0.0%", comp: 0 },
+                    { name: "Advanced Agent", badge: "advanced", out: 448, prompt: 8089, recall: "83.3%", quality: "86.7%", comp: 26 }
+                ]
+            }
+        };
+
+        // Charts State
+        let recallChartObj = null;
+        let tokenChartObj = null;
+
+        // Initialize Charts
+        function initCharts(mode) {
+            const ctxRecall = document.getElementById('recallChart').getContext('2d');
+            const ctxToken = document.getElementById('tokenChart').getContext('2d');
+
+            const isOnline = mode === 'online';
+            const dataRecall = isOnline 
+                ? [12.7, 96.4] 
+                : [2.4, 96.4];
+            
+            const dataToken = isOnline
+                ? [47632, 19881]
+                : [20846, 8089];
+
+            // Destroy previous instances if exist
+            if(recallChartObj) recallChartObj.destroy();
+            if(tokenChartObj) tokenChartObj.destroy();
+
+            // Render Recall Chart
+            recallChartObj = new Chart(ctxRecall, {
+                type: 'bar',
+                data: {
+                    labels: ['Baseline Agent', 'Advanced Agent'],
+                    datasets: [{
+                        label: 'Cross-Session Recall (%)',
+                        data: dataRecall,
+                        backgroundColor: ['#ec4899', '#6366f1'],
+                        borderColor: ['#f472b6', '#818cf8'],
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        barThickness: 45
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { family: 'Outfit', weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+
+            // Render Tokens Chart
+            tokenChartObj = new Chart(ctxToken, {
+                type: 'bar',
+                data: {
+                    labels: ['Baseline Agent', 'Advanced Agent'],
+                    datasets: [{
+                        label: 'Prompt Tokens Processed',
+                        data: dataToken,
+                        backgroundColor: ['#ec4899', '#10b981'],
+                        borderColor: ['#f472b6', '#34d399'],
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        barThickness: 45
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { family: 'Outfit', weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Set mode logic (Online vs Offline toggling)
+        function setMode(mode) {
+            // Update Buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            if(mode === 'online') {
+                document.querySelector('.mode-btn:nth-child(1)').classList.add('active');
+                document.getElementById('table-mode-badge').innerText = "Gemini-3-Flash Gateway";
+            } else {
+                document.querySelector('.mode-btn:nth-child(2)').classList.add('active');
+                document.getElementById('table-mode-badge').innerText = "Offline Heuristic Models";
+            }
+
+            // Update Metrics Cards
+            const selected = benchmarkData[mode];
+            document.getElementById('val-recall').innerText = selected.metrics.recall;
+            document.getElementById('val-recall-base').innerText = selected.metrics.recallBase;
+            document.getElementById('val-savings').innerText = selected.metrics.savings;
+            document.getElementById('val-compactions').innerText = selected.metrics.compactions;
+            document.getElementById('val-profile').innerText = selected.metrics.profile;
+
+            // Update Table Body
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            // Standard rows
+            tbody.innerHTML += `<tr><td colspan="6" style="font-weight: 800; color: var(--primary); background: rgba(99, 102, 241, 0.04); font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase;">Standard Benchmark</td></tr>`;
+            selected.standard.forEach(r => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>
+                            <div class="agent-name-cell">
+                                <span class="agent-badge ${r.badge}"></span>
+                                ${r.name}
+                            </div>
+                        </td>
+                        <td class="token-cell">${r.out.toLocaleString()}</td>
+                        <td class="token-cell">${r.prompt.toLocaleString()}</td>
+                        <td class="highlight-text">${r.recall}</td>
+                        <td>${r.quality}</td>
+                        <td class="token-cell">${r.comp}</td>
+                    </tr>
+                `;
+            });
+
+            // Stress rows
+            tbody.innerHTML += `<tr><td colspan="6" style="font-weight: 800; color: var(--secondary); background: rgba(236, 72, 153, 0.04); font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase;">Long-Context Stress Benchmark</td></tr>`;
+            selected.stress.forEach(r => {
+                const savingLabel = r.badge === 'advanced' ? `<span class="saving-badge">-${selected.metrics.savings} tokens</span>` : '';
+                tbody.innerHTML += `
+                    <tr>
+                        <td>
+                            <div class="agent-name-cell">
+                                <span class="agent-badge ${r.badge}"></span>
+                                ${r.name}
+                            </div>
+                        </td>
+                        <td class="token-cell">${r.out.toLocaleString()}</td>
+                        <td class="token-cell">${r.prompt.toLocaleString()} ${savingLabel}</td>
+                        <td class="highlight-text">${r.recall}</td>
+                        <td>${r.quality}</td>
+                        <td class="token-cell">${r.comp}</td>
+                    </tr>
+                `;
+            });
+
+            // Reload Charts
+            initCharts(mode);
+        }
+
+        // Run on Startup
+        window.onload = function() {
+            setMode('online');
+        };
+    </script>
+</body>
+</html>
