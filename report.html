@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Systems for AI Agent - Evaluation Dashboard</title>
+    <title>Hệ thống Bộ nhớ AI Agent - Dashboard Đánh giá</title>
     <!-- Modern Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -394,12 +394,12 @@
         <!-- Header -->
         <header>
             <div class="header-title">
-                <h1>AI Agent Memory Benchmark Report</h1>
-                <p>Day 17 - Track 3: Evaluation of Short-Term, Long-Term, and Compact Memory Systems</p>
+                <h1>Báo cáo Đánh giá Bộ nhớ AI Agent</h1>
+                <p>Day 17 - Track 3: Đánh giá các Hệ thống Bộ nhớ Ngắn hạn, Dài hạn và Bộ nhớ Nén (Compact Memory)</p>
             </div>
             <div class="mode-selector">
-                <button class="mode-btn active" onclick="setMode('online')">Online (Gemini 3 Flash)</button>
-                <button class="mode-btn" onclick="setMode('offline')">Offline Simulation</button>
+                <button class="mode-btn active" onclick="setMode('online')">Trực tuyến (Gemini 3 Flash)</button>
+                <button class="mode-btn" onclick="setMode('offline')">Mô phỏng Ngoại tuyến</button>
             </div>
         </header>
 
@@ -407,27 +407,27 @@
         <div class="dashboard-grid">
             <!-- Metric 1 -->
             <div class="card">
-                <div class="stat-label">Cross-Session Recall</div>
+                <div class="stat-label">Recall Liên Phiên (Cross-Session)</div>
                 <div class="stat-value success" id="val-recall">96.4%</div>
-                <div class="stat-description">Advanced Agent fact recall score across multiple conversation sessions. Baseline Agent scored only <span id="val-recall-base">12.7%</span>.</div>
+                <div class="stat-description">Tỷ lệ Advanced Agent nhớ đúng thông tin qua nhiều phiên trò chuyện khác nhau. Baseline Agent chỉ đạt <span id="val-recall-base">12.7%</span>.</div>
             </div>
             <!-- Metric 2 -->
             <div class="card">
-                <div class="stat-label">Context Savings (Stress)</div>
+                <div class="stat-label">Tiết kiệm Ngữ cảnh (Stress Test)</div>
                 <div class="stat-value" style="color: var(--primary)" id="val-savings">58.3%</div>
-                <div class="stat-description">Total prompt token load reduction during long stressing conversations thanks to compaction middleware.</div>
+                <div class="stat-description">Tỷ lệ giảm tải token ngữ cảnh (prompt tokens) trong cuộc hội thoại dài nhờ cơ chế nén bộ nhớ tự động.</div>
             </div>
             <!-- Metric 3 -->
             <div class="card">
-                <div class="stat-label">Compaction Triggers</div>
+                <div class="stat-label">Số lần Nén bộ nhớ</div>
                 <div class="stat-value" style="color: var(--secondary)" id="val-compactions">28</div>
-                <div class="stat-description">Number of times message histories were compressed into abstract context summaries.</div>
+                <div class="stat-description">Số lần lịch sử cuộc hội thoại cũ được nén tự động thành các đoạn tóm tắt ngữ cảnh.</div>
             </div>
             <!-- Metric 4 -->
             <div class="card">
-                <div class="stat-label">User Profile Scale</div>
+                <div class="stat-label">Kích thước Hồ sơ (User.md)</div>
                 <div class="stat-value" style="color: var(--warning)" id="val-profile">229 B</div>
-                <div class="stat-description">Final payload size of User.md containing structured, verified user metadata updates.</div>
+                <div class="stat-description">Dung lượng cuối cùng của file User.md chứa thông tin có cấu trúc của người dùng.</div>
             </div>
         </div>
 
@@ -435,8 +435,8 @@
         <div class="charts-container">
             <div class="chart-card">
                 <div class="chart-header">
-                    <div class="chart-title">Cross-Session Fact Recall</div>
-                    <div class="chart-badge">Standard Benchmark</div>
+                    <div class="chart-title">Tỷ lệ Nhớ Thông tin Liên phiên</div>
+                    <div class="chart-badge">Đánh giá Tiêu chuẩn</div>
                 </div>
                 <div style="height: 300px; position: relative;">
                     <canvas id="recallChart"></canvas>
@@ -444,8 +444,8 @@
             </div>
             <div class="chart-card">
                 <div class="chart-header">
-                    <div class="chart-title">Prompt Tokens Processed</div>
-                    <div class="chart-badge">Long-Context Stress Benchmark</div>
+                    <div class="chart-title">Token Ngữ cảnh Đã xử lý (Prompt)</div>
+                    <div class="chart-badge">Stress Test (Hội thoại dài)</div>
                 </div>
                 <div style="height: 300px; position: relative;">
                     <canvas id="tokenChart"></canvas>
@@ -456,19 +456,19 @@
         <!-- Full Results Table -->
         <div class="card card-full" style="margin-bottom: 32px;">
             <div class="chart-header">
-                <div class="chart-title">Detailed Evaluation Data</div>
-                <div class="chart-badge" id="table-mode-badge">Gemini-3-Flash Gateway</div>
+                <div class="chart-title">Dữ liệu Đánh giá Chi tiết</div>
+                <div class="chart-badge" id="table-mode-badge">Cổng kết nối Gemini-3-Flash</div>
             </div>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th>Scenario & Agent</th>
-                            <th>Agent Tokens Only</th>
-                            <th>Prompt Tokens Processed</th>
-                            <th>Cross-session recall</th>
-                            <th>Response quality</th>
-                            <th>Compactions</th>
+                            <th>Kịch bản & Agent</th>
+                            <th>Token sinh bởi Agent</th>
+                            <th>Token Ngữ cảnh (Prompt)</th>
+                            <th>Recall liên phiên</th>
+                            <th>Chất lượng phản hồi</th>
+                            <th>Số lần nén</th>
                         </tr>
                     </thead>
                     <tbody id="table-body">
@@ -481,23 +481,23 @@
         <!-- Architectural Layout -->
         <div class="card card-full">
             <div class="chart-header">
-                <div class="chart-title">Implemented Memory System Architecture</div>
-                <div class="chart-badge">Advanced Agent Layout</div>
+                <div class="chart-title">Kiến trúc Hệ thống Bộ nhớ Đã triển khai</div>
+                <div class="chart-badge">Sơ đồ Bộ nhớ Advanced Agent</div>
             </div>
             <div class="arch-flow">
                 <div class="arch-node">
-                    <div class="arch-node-title">1. Short-Term Memory</div>
-                    <div class="stat-description">LangChain / Thread-bound sliding window keeping recent dialog interactions intact (keep_messages = 4).</div>
+                    <div class="arch-node-title">1. Bộ nhớ Ngắn hạn</div>
+                    <div class="stat-description">Sliding window giữ lại 4 tin nhắn gần nhất trong cùng một phiên chat để phản hồi tự nhiên.</div>
                 </div>
                 <div class="arch-arrow">&rarr;</div>
                 <div class="arch-node">
-                    <div class="arch-node-title">2. Compact Memory</div>
-                    <div class="stat-description">Heuristic/LLM summarization triggered when threshold (>400 tokens) is exceeded, compressing old turns.</div>
+                    <div class="arch-node-title">2. Bộ nhớ Nén (Compact)</div>
+                    <div class="stat-description">Tự động nén/tóm tắt lịch sử trò chuyện cũ khi vượt quá ngưỡng 400 tokens để tiết kiệm ngữ cảnh.</div>
                 </div>
                 <div class="arch-arrow">&rarr;</div>
                 <div class="arch-node">
-                    <div class="arch-node-title">3. Persistent User.md</div>
-                    <div class="stat-description">Stable fact extraction layer extracting personal name, preferences, and location updates into a structured profile.</div>
+                    <div class="arch-node-title">3. Bộ nhớ Dài hạn (User.md)</div>
+                    <div class="stat-description">Trích xuất thông tin bền vững (tên, sở thích, nơi ở, v.v.) lưu trữ trực tiếp dưới dạng Markdown qua nhiều phiên chat.</div>
                 </div>
             </div>
         </div>
@@ -571,7 +571,7 @@
                 data: {
                     labels: ['Baseline Agent', 'Advanced Agent'],
                     datasets: [{
-                        label: 'Cross-Session Recall (%)',
+                        label: 'Tỷ lệ Recall (%)',
                         data: dataRecall,
                         backgroundColor: ['#ec4899', '#6366f1'],
                         borderColor: ['#f472b6', '#818cf8'],
@@ -607,7 +607,7 @@
                 data: {
                     labels: ['Baseline Agent', 'Advanced Agent'],
                     datasets: [{
-                        label: 'Prompt Tokens Processed',
+                        label: 'Token Ngữ cảnh (Prompt) Đã xử lý',
                         data: dataToken,
                         backgroundColor: ['#ec4899', '#10b981'],
                         borderColor: ['#f472b6', '#34d399'],
@@ -643,10 +643,10 @@
             document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
             if(mode === 'online') {
                 document.querySelector('.mode-btn:nth-child(1)').classList.add('active');
-                document.getElementById('table-mode-badge').innerText = "Gemini-3-Flash Gateway";
+                document.getElementById('table-mode-badge').innerText = "Cổng kết nối Gemini-3-Flash";
             } else {
                 document.querySelector('.mode-btn:nth-child(2)').classList.add('active');
-                document.getElementById('table-mode-badge').innerText = "Offline Heuristic Models";
+                document.getElementById('table-mode-badge').innerText = "Mô hình Mô phỏng Ngoại tuyến";
             }
 
             // Update Metrics Cards
@@ -662,7 +662,7 @@
             tbody.innerHTML = '';
 
             // Standard rows
-            tbody.innerHTML += `<tr><td colspan="6" style="font-weight: 800; color: var(--primary); background: rgba(99, 102, 241, 0.04); font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase;">Standard Benchmark</td></tr>`;
+            tbody.innerHTML += `<tr><td colspan="6" style="font-weight: 800; color: var(--primary); background: rgba(99, 102, 241, 0.04); font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase;">Đánh giá Tiêu chuẩn (Standard)</td></tr>`;
             selected.standard.forEach(r => {
                 tbody.innerHTML += `
                     <tr>
@@ -682,7 +682,7 @@
             });
 
             // Stress rows
-            tbody.innerHTML += `<tr><td colspan="6" style="font-weight: 800; color: var(--secondary); background: rgba(236, 72, 153, 0.04); font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase;">Long-Context Stress Benchmark</td></tr>`;
+            tbody.innerHTML += `<tr><td colspan="6" style="font-weight: 800; color: var(--secondary); background: rgba(236, 72, 153, 0.04); font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase;">Đánh giá Stress Test (Hội thoại dài)</td></tr>`;
             selected.stress.forEach(r => {
                 const savingLabel = r.badge === 'advanced' ? `<span class="saving-badge">-${selected.metrics.savings} tokens</span>` : '';
                 tbody.innerHTML += `
